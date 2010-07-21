@@ -23,6 +23,8 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
 import test.env.ComponentEnvironment;
+import test.fixtures.MonitorFixture;
+import test.fixtures.WorkerFixture;
 
 /**
  * @author aeremenok 2010
@@ -30,8 +32,8 @@ import test.env.ComponentEnvironment;
 @Test( sequential = true )
 public class MultiProgressGUITest
 {
-    private ComponentEnvironment<TestMonitor> env;
-    private TestMonitor                       progressBar;
+    private ComponentEnvironment<MonitorFixture> env;
+    private MonitorFixture                       progressBar;
     private JPopupMenuFixture                 menuFixture;
 
     @Test( timeOut = 15000 )
@@ -73,12 +75,12 @@ public class MultiProgressGUITest
         //        UIManager.getDefaults().put( TaskUI.CANCEL_TASK_ACTION_ICON, IMG.icon( IMG.REMOVE_ICON_PATH ) );
         UIManager.getDefaults().put( TaskUI.CANCEL_TASK_ACTION_TOOLTIP, MultiProgressGUITest.class.getSimpleName() );
 
-        env = ComponentEnvironment.fromQuery( new Callable<TestMonitor>()
+        env = ComponentEnvironment.fromQuery( new Callable<MonitorFixture>()
         {
             @Override
-            public TestMonitor call()
+            public MonitorFixture call()
             {
-                return new TestMonitor();
+                return new MonitorFixture();
             }
         }, true );
         env.setUp( this );
@@ -187,20 +189,6 @@ public class MultiProgressGUITest
                 }
             }
             return true;
-        }
-    }
-
-    protected class TestMonitor
-        extends TaskMonitor
-    {
-        public TestMonitor()
-        {
-            super( new TaskQueueFixture() );
-        }
-
-        public TaskPopup getTaskPopup()
-        {
-            return taskPopup;
         }
     }
 }
