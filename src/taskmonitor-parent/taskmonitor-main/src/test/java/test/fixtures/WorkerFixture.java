@@ -1,7 +1,7 @@
 /**
  * 
  */
-package org.taskmonitor.main;
+package test.fixtures;
 
 import java.util.UUID;
 
@@ -27,6 +27,12 @@ public class WorkerFixture
     public boolean isInterrupted()
     {
         return interrupted;
+    }
+
+    @Override
+    public String toString()
+    {
+        return getTaskId();
     }
 
     @Override

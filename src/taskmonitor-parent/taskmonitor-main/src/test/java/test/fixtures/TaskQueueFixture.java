@@ -1,9 +1,11 @@
 /**
  * 
  */
-package org.taskmonitor.main;
+package test.fixtures;
 
 import javax.swing.SwingWorker;
+
+import org.taskmonitor.main.TaskQueue;
 
 /**
  * @author aeremenok 2010

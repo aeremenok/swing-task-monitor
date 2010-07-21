@@ -17,6 +17,8 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
 import test.env.Environment;
+import test.fixtures.TaskQueueFixture;
+import test.fixtures.WorkerFixture;
 
 /**
  * @author aeremenok 2010
