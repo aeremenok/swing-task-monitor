@@ -14,7 +14,11 @@ import javax.swing.JProgressBar;
 import javax.swing.SwingConstants;
 
 /**
+ * Displays an iterruption icon, a task title and an indeterminate progressbar<br>
+ * todo listen for SwingWorker progress
+ * 
  * @author aeremenok 2010
+ * @see JProgressBar
  */
 public class ProgressBarButton
     extends JButton
@@ -26,7 +30,7 @@ public class ProgressBarButton
         setName( getText() );
 
         setLayout( new BoxLayout( this, BoxLayout.X_AXIS ) );
-        add( createIcon() );
+        add( createIconLabel() );
         add( Box.createHorizontalGlue() );
         add( createProgressBar() );
 
@@ -34,18 +38,20 @@ public class ProgressBarButton
         setIcon( null );
     }
 
-    private JLabel createIcon()
+    protected JLabel createIconLabel()
     {
         return new JLabel( getText(), getIcon(), SwingConstants.CENTER );
     }
 
-    private JProgressBar createProgressBar()
+    protected JProgressBar createProgressBar()
     {
         final JProgressBar progressBar = new JProgressBar();
-        progressBar.setMaximumSize( new Dimension( 70, progressBar.getMaximumSize().height ) );
         progressBar.setName( getText() );
         progressBar.setIndeterminate( true );
+
+        // make all progressbars' width equal 
+        progressBar.setMaximumSize( new Dimension( 70, progressBar.getMaximumSize().height ) );
+
         return progressBar;
     }
-
 }

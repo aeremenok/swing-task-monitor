@@ -8,34 +8,69 @@ import java.awt.event.ActionEvent;
 import java.util.List;
 
 import javax.swing.AbstractAction;
-import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 import javax.swing.SwingWorker;
 
 /**
+ * A main component, that displays progress and controls. <br>
+ * <h1>Usage:</h1>
+ * 
+ * <pre>
+ * TaskMonitor myMonitor = new TaskMonitor( new TaskQueue()
+ * {
+ *     // ... provide implementation to handle your workers
+ * } );
+ * myFrame.add( myMonitor );
+ * 
+ * myMonitor.invoke( new SwingWorker()
+ * {
+ *     // ... implement background processing
+ * } );
+ * </pre>
+ * 
  * @author aeremenok 2010
  */
 public class TaskMonitor
     extends JPanel
-    implements
-    TaskQueueListener
 {
-    protected final TaskQueue taskQueue;
     /**
-     * контекстное меню из наименований запущенных workers
+     * manages task execution
      */
-    protected final TaskPopup taskPopup;
+    protected final TaskQueue         taskQueue;
     /**
-     * кнопка, содержащая иконку отмены, progressBar и "выберите запос"
+     * popups to display tasks, if the queue is longer than one
      */
-    protected final JButton   showTaskListButton;
+    protected final TaskPopup         taskPopup;
+    /**
+     * shows the {@link TaskPopup}
+     */
+    protected final ProgressBarButton showTaskListButton;
 
+    /**
+     * Create a <code>TaskMonitor</code> using the specified <code>TaskQueue</code>
+     * 
+     * @param taskQueue the <code>TaskQueue</code> to use
+     */
     public TaskMonitor( final TaskQueue taskQueue )
     {
         super( new BorderLayout() );
         this.taskQueue = taskQueue;
-        taskQueue.addTaskQueueListener( this );
+        taskQueue.addTaskQueueListener( new TaskQueueListener()
+        {
+            @Override
+            public void taskQueueChanged( final TaskQueueEvent taskQueueEvent )
+            {
+                SwingUtilities.invokeLater( new Runnable()
+                {
+                    @Override
+                    public void run()
+                    {
+                        processChangedQueue( taskQueueEvent );
+                    }
+                } );
+            }
+        } );
 
         taskPopup = new TaskPopup( taskQueue );
         showTaskListButton = new ProgressBarButton( new ShowTaskList() );
@@ -43,57 +78,58 @@ public class TaskMonitor
         setVisible( false );
     }
 
+    /**
+     * add a task to {@link TaskQueue}, call {@link SwingWorker#execute()} and display progress
+     * 
+     * @param worker a task to display
+     */
     public void invoke( final SwingWorker worker )
     {
         taskQueue.invoke( worker );
     }
 
-    @Override
-    public void taskQueueChanged( final TaskQueueEvent taskQueueEvent )
+    /**
+     * display changes after some tasks were started, completed or interrupted
+     * 
+     * @param event contains info about the queue before and after the change
+     */
+    protected void processChangedQueue( final TaskQueueEvent event )
     {
-        final Runnable runnable = new Runnable()
-        {
-            @Override
-            public void run()
-            {
-                workerQueueChanged( taskQueueEvent );
-            }
-        };
-        SwingUtilities.invokeLater( runnable );
-    }
+        final List<SwingWorker> changedQueue = event.getNewQueue();
 
-    protected void workerQueueChanged( final TaskQueueEvent taskQueueEvent )
-    {
-        final List<SwingWorker> workers = taskQueueEvent.getNewQueue();
-
-        if( workers.isEmpty() )
+        if( changedQueue.isEmpty() )
         {
             setVisible( false );
             return;
         }
 
         removeAll();
-        if( workers.size() == 1 )
+        if( changedQueue.size() == 1 )
         {
-            final SwingWorker first = workers.get( 0 );
-            add( new ProgressBarButton( new CancelTaskAction( taskQueue, first ) ), BorderLayout.CENTER );
+            final SwingWorker first = changedQueue.get( 0 );
+            add( new ProgressBarButton( new CancelTaskAction( first, taskQueue ) ), BorderLayout.CENTER );
         }
         else
         {
-            taskPopup.setCurrentWorkerQueue( workers );
+            taskPopup.setCurrentWorkerQueue( changedQueue );
             add( showTaskListButton, BorderLayout.CENTER );
         }
         setVisible( true );
         updateUI();
     }
 
+    /**
+     * shows the {@link TaskPopup}
+     * 
+     * @author aeremenok 2010
+     */
     protected class ShowTaskList
         extends AbstractAction
     {
         public ShowTaskList()
         {
-            super( TaskUI.cancelTaskTooltip(), TaskUI.cancelTaskIcon() );
-            putValue( LONG_DESCRIPTION, TaskUI.cancelTaskTooltip() );
+            super( TaskUI.getCancelTaskTooltip(), TaskUI.getCancelTaskIcon() );
+            putValue( LONG_DESCRIPTION, TaskUI.getCancelTaskTooltip() );
         }
 
         @Override

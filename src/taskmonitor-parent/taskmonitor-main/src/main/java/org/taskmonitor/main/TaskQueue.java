@@ -6,9 +6,9 @@ package org.taskmonitor.main;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 
 import javax.swing.SwingWorker;
 import javax.swing.SwingWorker.StateValue;
@@ -16,36 +16,38 @@ import javax.swing.SwingWorker.StateValue;
 import org.apache.log4j.Logger;
 
 /**
+ * Manages task execution. Since {@link SwingWorker}'s can be used differently, you need to provide the implementation
+ * details.
+ * 
  * @author aeremenok 2010
  */
 public abstract class TaskQueue
 {
-    private static final Logger            log                      = Logger.getLogger( TaskQueue.class );
+    private static final Logger              log                      = Logger.getLogger( TaskQueue.class );
 
-    private final Map<String, SwingWorker> workersByTitles          = new HashMap<String, SwingWorker>();
-    private final TaskQueueListenerSupport taskQueueListenerSupport = new TaskQueueListenerSupport();
+    protected final Map<String, SwingWorker> workersByTitles          = new TreeMap<String, SwingWorker>();
+    protected final TaskQueueListenerSupport taskQueueListenerSupport = new TaskQueueListenerSupport();
 
-    public boolean addTaskQueueListener( final TaskQueueListener e )
+    /**
+     * @param listener will be called, when some tasks are started, completed or interrupted
+     * @see TaskQueueListener
+     */
+    public void addTaskQueueListener( final TaskQueueListener listener )
     {
-        return taskQueueListenerSupport.addListener( e );
+        taskQueueListenerSupport.addListener( listener );
     }
 
     /**
-     * @param worker
-     * @return название, фильтра (идентификатор кнопки)
-     */
-    public abstract String getActionId( final SwingWorker worker );
-
-    /**
-     * @param worker
-     * @return название, которое отображается пользователю
+     * @param worker a task, that needs to be presented
+     * @return a human-readable title to display
      */
     public abstract String getTitle( final SwingWorker worker );
 
     /**
-     * выполнить прерывание работы worker
+     * If the task is still running, does the actual interruption and removes it from the queue. Then notifies
+     * listeners.
      * 
-     * @param worker
+     * @param worker a task to interrupt
      */
     public void interrupt( final SwingWorker worker )
     {
@@ -59,22 +61,21 @@ public abstract class TaskQueue
             doIterruption( worker );
         }
 
-        log.debug( "отменена задача " + getActionId( worker ) );
+        log.debug( "task cancelled: " + getTaskId( worker ) );
         unregisterTask( worker );
     }
 
     /**
-     * Если worker c таким же названием не выполняется, то запустить worker, добавить его в список выполняющихся
-     * worker-ов и оповестить всех об этом
+     * If the task is not already started, registers it and begins execution. Then notifies listeners.
      * 
-     * @param worker
+     * @param worker a task to start
      */
     public void invoke( final SwingWorker worker )
     {
-        final String title = getActionId( worker );
+        final String taskId = getTaskId( worker );
         if( workersByTitles.containsValue( worker ) )
         {
-            log.debug( title + " уже вызван" );
+            log.debug( "already called task: " + taskId );
             return;
         }
 
@@ -83,53 +84,87 @@ public abstract class TaskQueue
         final List<SwingWorker> oldQueue = takeQueueSnapshot();
         synchronized( workersByTitles )
         {
-            workersByTitles.put( title, worker );
+            workersByTitles.put( taskId, worker );
 
-            log.debug( "запущена задача " + title );
+            log.debug( "task started: " + taskId );
             worker.execute();
 
             taskQueueListenerSupport.fireEvent( new TaskQueueEvent( this, oldQueue, takeQueueSnapshot() ) );
         }
     }
 
+    /**
+     * Is called to define whether to enable the cancelling button for the given task.
+     * 
+     * @param worker will be checked for interruption ability
+     * @return <code>true</code> if given worker can be interrupted
+     * @see CancelTaskAction
+     * @see ProgressBarButton
+     */
     public abstract boolean isInterruptible( final SwingWorker worker );
 
-    private List<SwingWorker> takeQueueSnapshot()
+    /**
+     * @param listener will be unregistered
+     * @see TaskQueueListener
+     */
+    public void removeListener( final TaskQueueListener listener )
+    {
+        this.taskQueueListenerSupport.removeListener( listener );
+    }
+
+    /**
+     * Does the actual interruption. You may call {@link SwingWorker#cancel(boolean)}, make checks or cleanups.
+     * 
+     * @param worker a task to interrupt
+     */
+    protected abstract void doIterruption( SwingWorker worker );
+
+    /**
+     * Is called to provide unique task key when the task is being registered or unregistered.
+     * 
+     * @param worker a task to be identified
+     * @return an identifier, that is unique for each worker
+     */
+    protected abstract String getTaskId( final SwingWorker worker );
+
+    /**
+     * @return a fresh copy of currently running tasks
+     */
+    protected List<SwingWorker> takeQueueSnapshot()
     {
         return new ArrayList<SwingWorker>( workersByTitles.values() );
     }
 
     /**
-     * удалить из очереди задачу worker
+     * Removes a task from the queue. Then notifies listeners.
      * 
-     * @param worker
+     * @param worker a task to be unregistered
      */
-    private void unregisterTask( final SwingWorker worker )
+    protected void unregisterTask( final SwingWorker worker )
     {
         if( !workersByTitles.containsValue( worker ) )
         {
             return;
         }
 
-        final String title = getActionId( worker );
+        final String taskId = getTaskId( worker );
         final List<SwingWorker> oldQueue = takeQueueSnapshot();
         synchronized( workersByTitles )
         {
-            log.debug( "завершена задача " + title );
-            workersByTitles.remove( title );
+            log.debug( "task completed: " + taskId );
+            workersByTitles.remove( taskId );
             taskQueueListenerSupport.fireEvent( new TaskQueueEvent( this, oldQueue, takeQueueSnapshot() ) );
         }
     }
 
     /**
-     * прервать выполнение worker<br>
-     * ПРЕДУСЛОВИЕ: isInterruptible( worker ) == true
+     * Tracks the {@link SwingWorker} state. When the state is {@link StateValue#DONE}, removes it from queue using
+     * {@link TaskQueue#unregisterTask(SwingWorker)}.
      * 
-     * @param worker
+     * @see SwingWorker#addPropertyChangeListener(PropertyChangeListener)
+     * @author aeremenok 2010
      */
-    protected abstract void doIterruption( SwingWorker worker );
-
-    private final class CompletionListener
+    protected final class CompletionListener
         implements
         PropertyChangeListener
     {
@@ -140,10 +175,6 @@ public abstract class TaskQueue
             this.worker = worker;
         }
 
-        /**
-         * вызывается при изменении статуса запущенного worker. Если статус сделался "фоновая работа выполнена", то
-         * удалить worker из списка задач
-         */
         @Override
         public void propertyChange( final PropertyChangeEvent evt )
         {
@@ -152,11 +183,11 @@ public abstract class TaskQueue
                 case PENDING:
                 case STARTED:
                     break;
-                case DONE: // xxx если выставлен done, то doInBackground выполнено. done() - может быть выполнено, а может еще нет
+                case DONE:
+                    // SwingWorker#doInBackground() is completed, SwingWorker#done() enqueued in EDT
                     unregisterTask( worker );
                     break;
             }
         }
-
     }
 }
