@@ -20,7 +20,7 @@ import javax.swing.SwingWorker;
 public class TaskPopup
     extends JPopupMenu
 {
-    private final TaskQueue taskQueue;
+    protected final TaskQueue taskQueue;
 
     public TaskPopup( final TaskQueue taskQueue )
     {
@@ -74,7 +74,7 @@ public class TaskPopup
     {
         private CancelAndHide( final SwingWorker worker )
         {
-            super( taskQueue, worker );
+            super( worker, taskQueue );
         }
 
         @Override

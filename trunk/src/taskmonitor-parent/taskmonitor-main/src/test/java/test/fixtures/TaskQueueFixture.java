@@ -14,7 +14,7 @@ public class TaskQueueFixture
     extends TaskQueue
 {
     @Override
-    public String getActionId( final SwingWorker worker )
+    public String getTaskId( final SwingWorker worker )
     {
         return ((WorkerFixture) worker).getTaskId();
     }

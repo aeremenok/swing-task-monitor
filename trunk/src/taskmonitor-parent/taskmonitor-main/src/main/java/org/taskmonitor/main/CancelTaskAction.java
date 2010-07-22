@@ -9,7 +9,10 @@ import javax.swing.AbstractAction;
 import javax.swing.SwingWorker;
 
 /**
- * Действие: вызвать у taskQueu.interrupt(worker)
+ * Initiates a {@link SwingWorker} interruption by the {@link TaskQueue}. Is enabled if and only if the
+ * {@link TaskQueue#isInterruptible(SwingWorker)} returns <code>true</code>.
+ * 
+ * @author aeremenok 2010
  */
 public class CancelTaskAction
     extends AbstractAction
@@ -18,16 +21,14 @@ public class CancelTaskAction
     private final SwingWorker worker;
 
     /**
-     * Дейсвие становится активным только если taskQueue.isInterruptible( worker )==true
-     * 
-     * @param taskQueue место нахождения worker
-     * @param worker worker для отмены
+     * @param worker to be interrupted
+     * @param taskQueue controls the given worker
      */
-    public CancelTaskAction( final TaskQueue taskQueue, final SwingWorker worker )
+    public CancelTaskAction( final SwingWorker worker, final TaskQueue taskQueue )
     {
         super( taskQueue.getTitle( worker ), taskQueue.isInterruptible( worker )
-            ? TaskUI.cancelTaskIcon() : null );
-        putValue( LONG_DESCRIPTION, TaskUI.cancelTaskTooltip() );
+            ? TaskUI.getCancelTaskIcon() : null );
+        putValue( LONG_DESCRIPTION, TaskUI.getCancelTaskTooltip() );
 
         setEnabled( taskQueue.isInterruptible( worker ) );
 

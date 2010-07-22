@@ -23,7 +23,7 @@ import test.fixtures.WorkerFixture;
 /**
  * @author aeremenok 2010
  */
-public class MultiProgressTest
+public class TaskQueueTest
 {
     private Environment environment;
 

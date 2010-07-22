@@ -30,11 +30,11 @@ import test.fixtures.WorkerFixture;
  * @author aeremenok 2010
  */
 @Test( sequential = true )
-public class MultiProgressGUITest
+public class TaskMonitorGUITest
 {
     private ComponentEnvironment<MonitorFixture> env;
     private MonitorFixture                       progressBar;
-    private JPopupMenuFixture                 menuFixture;
+    private JPopupMenuFixture                    menuFixture;
 
     @Test( timeOut = 15000 )
     public void cancelAll()
@@ -47,8 +47,8 @@ public class MultiProgressGUITest
         final WaitingWorker third = createTestWorker();
 
         invokeAndExpect( first, first.getTaskId() );
-        invokeAndExpect( second, MultiProgressGUITest.class.getSimpleName() );
-        invokeAndExpect( third, MultiProgressGUITest.class.getSimpleName() );
+        invokeAndExpect( second, TaskMonitorGUITest.class.getSimpleName() );
+        invokeAndExpect( third, TaskMonitorGUITest.class.getSimpleName() );
 
         assert progressBar.isVisible();
         pack();
@@ -56,7 +56,7 @@ public class MultiProgressGUITest
         clickMainButton();
         requireMenuItemCount( 3 );
         clickAtMenuItem( first );
-        requireMainButtonText( MultiProgressGUITest.class.getSimpleName() );
+        requireMainButtonText( TaskMonitorGUITest.class.getSimpleName() );
 
         clickMainButton();
         requireMenuItemCount( 2 );
@@ -73,7 +73,7 @@ public class MultiProgressGUITest
         throws Exception
     {
         //        UIManager.getDefaults().put( TaskUI.CANCEL_TASK_ACTION_ICON, IMG.icon( IMG.REMOVE_ICON_PATH ) );
-        UIManager.getDefaults().put( TaskUI.CANCEL_TASK_ACTION_TOOLTIP, MultiProgressGUITest.class.getSimpleName() );
+        UIManager.getDefaults().put( TaskUI.CANCEL_TASK_ACTION_TOOLTIP, TaskMonitorGUITest.class.getSimpleName() );
 
         env = ComponentEnvironment.fromQuery( new Callable<MonitorFixture>()
         {

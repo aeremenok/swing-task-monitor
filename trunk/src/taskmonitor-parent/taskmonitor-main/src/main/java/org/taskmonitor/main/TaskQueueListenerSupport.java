@@ -3,25 +3,35 @@
  */
 package org.taskmonitor.main;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
+ * Contains a {@link List} of {@link TaskQueueListener}s and fires events on them, preserving the order of addition.
+ * 
  * @author aeremenok 2010
  */
 public class TaskQueueListenerSupport
 {
-    private final Set<TaskQueueListener> listeners = new HashSet<TaskQueueListener>();
+    protected final List<TaskQueueListener> listeners = new LinkedList<TaskQueueListener>();
 
-    public boolean addListener( final TaskQueueListener e )
+    /**
+     * Add a new listener if it hasn't been added yet
+     * 
+     * @param listener a listener to add
+     */
+    public void addListener( final TaskQueueListener listener )
     {
-        return listeners.add( e );
+        if( !listeners.contains( listener ) )
+        {
+            listeners.add( listener );
+        }
     }
 
     /**
-     * вызываетс€, когда измен€етс€ состав работающих workers.
+     * Notifies all {@link TaskQueueListener}s when tasks are being added or removed from the {@link TaskQueue}
      * 
-     * @param taskQueueEvent
+     * @param taskQueueEvent an event to fire
      */
     public void fireEvent( final TaskQueueEvent taskQueueEvent )
     {
@@ -31,9 +41,13 @@ public class TaskQueueListenerSupport
         }
     }
 
-    public boolean removeListener( final TaskQueueListener listener )
+    /**
+     * Remove a given listener
+     * 
+     * @param listener a listener to remove
+     */
+    public void removeListener( final TaskQueueListener listener )
     {
-        return listeners.remove( listener );
+        listeners.remove( listener );
     }
-
 }
