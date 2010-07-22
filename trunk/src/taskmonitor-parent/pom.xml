@@ -40,7 +40,7 @@
 							<svn>javasvn</svn>
 						</providerImplementations>
 						<connectionUrl>scm:svn:https://swing-task-monitor.googlecode.com/svn/trunk/src/taskmonitor-parent</connectionUrl>
-						<tagBase>scm:svn:https://swing-task-monitor.googlecode.com/svn/tags</tagBase>
+						<tagBase>https://swing-task-monitor.googlecode.com/svn/tags</tagBase>
 					</configuration>
 					<dependencies>
 						<dependency>
