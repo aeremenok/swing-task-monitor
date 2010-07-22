@@ -12,7 +12,7 @@
 	<groupId>org.taskmonitor</groupId>
 	<artifactId>taskmonitor-main</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>taskmonitor-main</name>
+	<name>Swing Task Monitor main module</name>
 	<!--  -->
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
