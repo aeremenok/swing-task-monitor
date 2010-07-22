@@ -3,7 +3,7 @@
 	<!-- -->
 	<groupId>org.taskmonitor</groupId>
 	<artifactId>taskmonitor-parent</artifactId>
-	<version>0.0.1</version>
+	<version>0.0.2-SNAPSHOT</version>
 	<packaging>pom</packaging>
 	<!-- -->
 	<name>Swing Task Monitor</name>
@@ -72,8 +72,8 @@
 		</snapshotRepository>
 	</distributionManagement>
 	<scm>
-		<url>http://swing-task-monitor.googlecode.com/svn/tags/taskmonitor-parent-0.0.1</url>
-		<connection>scm:svn:http://swing-task-monitor.googlecode.com/svn/tags/taskmonitor-parent-0.0.1</connection>
-		<developerConnection>scm:svn:https://swing-task-monitor.googlecode.com/svn/tags/taskmonitor-parent-0.0.1</developerConnection>
+		<url>http://swing-task-monitor.googlecode.com/svn/trunk/src/taskmonitor-parent</url>
+		<connection>scm:svn:http://swing-task-monitor.googlecode.com/svn/trunk/src/taskmonitor-parent</connection>
+		<developerConnection>scm:svn:https://swing-task-monitor.googlecode.com/svn/trunk/src/taskmonitor-parent</developerConnection>
 	</scm>
 </project>
