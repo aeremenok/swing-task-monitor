@@ -1,10 +1,16 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
+	<!-- -->
 	<groupId>org.taskmonitor</groupId>
 	<artifactId>taskmonitor-parent</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<packaging>pom</packaging>
+	<!-- -->
+	<modules>
+		<module>taskmonitor-main</module>
+	</modules>
+	<!-- -->
 	<build>
 		<pluginManagement>
 			<plugins>
@@ -22,8 +28,24 @@
 				</plugin>
 			</plugins>
 		</pluginManagement>
+		<extensions>
+			<extension>
+				<groupId>org.apache.maven.wagon</groupId>
+				<artifactId>wagon-webdav</artifactId>
+				<version>1.0-beta-2</version>
+			</extension>
+		</extensions>
 	</build>
-	<modules>
-		<module>taskmonitor-main</module>
-	</modules>
+	<!-- using google code as target maven repository http://www.beeworks.be/hosting-maven-repository-google-code/ -->
+	<distributionManagement>
+		<repository>
+			<id>googlecode.taskmonitor.repo</id>
+			<url>dav:https://swing-task-monitor.googlecode.com/svn/maven-repository/releases/</url>
+		</repository>
+		<snapshotRepository>
+			<id>googlecode.taskmonitor.snapshotrepo</id>
+			<url>dav:https://swing-task-monitor.googlecode.com/svn/maven-repository/snapshots/</url>
+			<uniqueVersion>false</uniqueVersion>
+		</snapshotRepository>
+	</distributionManagement>
 </project>
