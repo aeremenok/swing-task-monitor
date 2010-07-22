@@ -126,7 +126,7 @@ public class TaskMonitor
     protected class ShowTaskList
         extends AbstractAction
     {
-        public ShowTaskList()
+        protected ShowTaskList()
         {
             super( TaskUI.getCancelTaskTooltip(), TaskUI.getCancelTaskIcon() );
             putValue( LONG_DESCRIPTION, TaskUI.getCancelTaskTooltip() );

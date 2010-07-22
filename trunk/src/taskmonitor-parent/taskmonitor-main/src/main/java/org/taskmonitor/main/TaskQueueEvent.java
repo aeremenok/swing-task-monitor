@@ -11,7 +11,7 @@ import javax.swing.SwingWorker;
 /**
  * A snapshot of task collection that is created by the {@link TaskQueue} when tasks are started, completed or
  * interrupted. Contains the queue before change, after change and the differences between them. <u>All of them are
- * unmodifiable</u>
+ * unmodifiable.</u>
  * 
  * @author aeremenok 2010
  * @author mnikolaev 2010

@@ -4,7 +4,7 @@
 package org.taskmonitor.main;
 
 /**
- * Observes the task collection of the {@link TaskQueue}
+ * Observes the task collection of the {@link TaskQueue}.
  * 
  * @author aeremenok 2010
  */

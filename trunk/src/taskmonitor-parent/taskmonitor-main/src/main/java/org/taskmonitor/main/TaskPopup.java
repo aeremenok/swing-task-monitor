@@ -11,10 +11,11 @@ import java.awt.event.ActionEvent;
 import java.util.List;
 
 import javax.swing.JPopupMenu;
-import javax.swing.SwingUtilities;
 import javax.swing.SwingWorker;
 
 /**
+ * Displays a list of {@link ProgressBarButton}s for the current task queue. Each button interrupts a task.
+ * 
  * @author aeremenok 2010
  */
 public class TaskPopup
@@ -22,38 +23,54 @@ public class TaskPopup
 {
     protected final TaskQueue taskQueue;
 
+    /**
+     * @param taskQueue is used to create {@link CancelTaskAction}s for each {@link ProgressBarButton}
+     */
     public TaskPopup( final TaskQueue taskQueue )
     {
         this.taskQueue = taskQueue;
     }
 
-    private static void showPopupMenu( final JPopupMenu jpm, final Component source, int x, int y, final int yOffset )
-    {
+    /**
+     * Makes the popup apper inside the screen bounds
+     * 
+     * @param jpm
+     * @param source
+     * @param x
+     * @param y
+     * @param yOffset
+     */
+    protected static void showPopupMenu( final JPopupMenu jpm, final Component source, int x, int y, final int yOffset )
+    { // fixme still bad behavior, popup better
         final Dimension screen = Toolkit.getDefaultToolkit().getScreenSize();
         screen.height -= 50;
+
         final Point origin = source.getLocationOnScreen();
         origin.translate( x, y );
+
         final int height = jpm.getHeight();
         final int width = jpm.getWidth();
+
         if( origin.x + width > screen.width )
         {
-            //x -= (origin.x + width) - screen.width;
-            // we prefer kde behaviour
             x -= width;
         }
         if( origin.y + height > screen.height )
         {
-            // we prefer kde behaviour
-            //y -= (origin.y + height) - screen.height;
             y -= height;
             y += yOffset;
         }
+
         jpm.show( source, x, y );
     }
 
+    /**
+     * Called by {@link TaskMonitor} when the task collection changes
+     * 
+     * @param workers new task collection
+     */
     public void setCurrentWorkerQueue( final List<SwingWorker> workers )
     {
-        assert SwingUtilities.isEventDispatchThread();
         removeAll();
         for( final SwingWorker worker : workers )
         {
@@ -67,12 +84,14 @@ public class TaskPopup
     }
 
     /**
+     * Does interruption then hides the popup.
+     * 
      * @author aeremenok 2010
      */
-    private final class CancelAndHide
+    protected class CancelAndHide
         extends CancelTaskAction
     {
-        private CancelAndHide( final SwingWorker worker )
+        protected CancelAndHide( final SwingWorker worker )
         {
             super( worker, taskQueue );
         }
@@ -84,19 +103,4 @@ public class TaskPopup
             setVisible( false );
         }
     }
-
-    //    private JLabel createIconLabel( final JMenuItem item )
-    //    {
-    //        final JLabel label = new JLabel( item.getText() );
-    //        label.setEnabled( item.isEnabled() );
-    //        return label;
-    //    }
-    //
-    //    private JProgressBar createProgressBar( final JMenuItem item )
-    //    {
-    //        final JProgressBar progressBar = new JProgressBar();
-    //        progressBar.setIndeterminate( true );
-    //        progressBar.setEnabled( item.isEnabled() );
-    //        return progressBar;
-    //    }
 }
