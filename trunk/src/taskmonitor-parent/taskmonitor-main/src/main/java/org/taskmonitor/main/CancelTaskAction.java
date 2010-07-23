@@ -14,6 +14,7 @@ import javax.swing.SwingWorker;
  * 
  * @author aeremenok 2010
  */
+@SuppressWarnings( "unchecked" )
 public class CancelTaskAction
     extends AbstractAction
 {

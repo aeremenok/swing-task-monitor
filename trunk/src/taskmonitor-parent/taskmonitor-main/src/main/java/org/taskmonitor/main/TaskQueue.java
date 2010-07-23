@@ -20,8 +20,9 @@ import org.apache.log4j.Logger;
  * details.
  * 
  * @author aeremenok 2010
+ * @param <W> worker type
  */
-public abstract class TaskQueue
+public abstract class TaskQueue<W extends SwingWorker>
 {
     private static final Logger              log                      = Logger.getLogger( TaskQueue.class );
 
@@ -41,7 +42,7 @@ public abstract class TaskQueue
      * @param worker a task, that needs to be presented
      * @return a human-readable title to display
      */
-    public abstract String getTitle( final SwingWorker worker );
+    public abstract String getTitle( final W worker );
 
     /**
      * If the task is still running, does the actual interruption and removes it from the queue. Then notifies
@@ -49,7 +50,7 @@ public abstract class TaskQueue
      * 
      * @param worker a task to interrupt
      */
-    public void interrupt( final SwingWorker worker )
+    public void interrupt( final W worker )
     {
         if( !workersByTitles.containsValue( worker ) )
         {
@@ -70,7 +71,7 @@ public abstract class TaskQueue
      * 
      * @param worker a task to start
      */
-    public void invoke( final SwingWorker worker )
+    public void invoke( final W worker )
     {
         final String taskId = getTaskId( worker );
         if( workersByTitles.containsValue( worker ) )
@@ -101,7 +102,7 @@ public abstract class TaskQueue
      * @see CancelTaskAction
      * @see ProgressBarButton
      */
-    public abstract boolean isInterruptible( final SwingWorker worker );
+    public abstract boolean isInterruptible( final W worker );
 
     /**
      * @param listener will be unregistered
@@ -117,7 +118,7 @@ public abstract class TaskQueue
      * 
      * @param worker a task to interrupt
      */
-    protected abstract void doIterruption( SwingWorker worker );
+    protected abstract void doIterruption( W worker );
 
     /**
      * Is called to provide unique task key when the task is being registered or unregistered.
@@ -125,7 +126,7 @@ public abstract class TaskQueue
      * @param worker a task to be identified
      * @return an identifier, that is unique for each worker
      */
-    protected abstract String getTaskId( final SwingWorker worker );
+    protected abstract String getTaskId( final W worker );
 
     /**
      * @return a fresh copy of currently running tasks
@@ -140,7 +141,7 @@ public abstract class TaskQueue
      * 
      * @param worker a task to be unregistered
      */
-    protected void unregisterTask( final SwingWorker worker )
+    protected void unregisterTask( final W worker )
     {
         if( !workersByTitles.containsValue( worker ) )
         {
@@ -168,9 +169,9 @@ public abstract class TaskQueue
         implements
         PropertyChangeListener
     {
-        private final SwingWorker worker;
+        private final W worker;
 
-        private CompletionListener( final SwingWorker worker )
+        private CompletionListener( final W worker )
         {
             this.worker = worker;
         }
