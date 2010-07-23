@@ -29,9 +29,7 @@ public class ComponentEnvironment<C extends JComponent>
 
     private final boolean       scroll;
     private final Callable<C>   guiQuery;
-
     private FrameFixture        frameFixture;
-
     private C                   component;
 
     public ComponentEnvironment( final Callable<C> guiQuery, final boolean scroll )

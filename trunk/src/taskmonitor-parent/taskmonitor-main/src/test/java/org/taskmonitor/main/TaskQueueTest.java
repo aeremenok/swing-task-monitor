@@ -35,8 +35,8 @@ public class TaskQueueTest
     {
         final TaskQueueFixture progressBar = createFixture();
 
-        final List<WorkerFixture> toBeCompleted = asList( createTestWorker(), createTestWorker(), createTestWorker() );
-        final List<WorkerFixture> toBeCancelled = asList( createTestWorker(), createTestWorker(), createTestWorker() );
+        final List<WorkerFixture> toBeCompleted = asList( newTask( "Task1" ), newTask( "Task2" ), newTask( "Task3" ) );
+        final List<WorkerFixture> toBeCancelled = asList( newTask( "Task4" ), newTask( "Task5" ), newTask( "Task6" ) );
 
         final List<WorkerFixture> concat = newArrayList( concat( toBeCompleted, toBeCancelled ) );
         Collections.shuffle( concat );
@@ -70,7 +70,7 @@ public class TaskQueueTest
     {
         final TaskQueueFixture progressBar = createFixture();
 
-        final List<WorkerFixture> testWorkers = asList( createTestWorker(), createTestWorker(), createTestWorker() );
+        final List<WorkerFixture> testWorkers = asList( newTask( "Task1" ), newTask( "Task2" ), newTask( "Task3" ) );
 
         for( final WorkerFixture testWorker : testWorkers )
         {
@@ -104,8 +104,8 @@ public class TaskQueueTest
         return new TaskQueueFixture();
     }
 
-    protected WorkerFixture createTestWorker()
+    protected WorkerFixture newTask( final String taskId )
     {
-        return new WorkerFixture();
+        return new WorkerFixture( taskId );
     }
 }

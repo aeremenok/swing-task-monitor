@@ -7,8 +7,10 @@ import static org.testng.Assert.assertEquals;
 
 import java.awt.Container;
 import java.awt.Dimension;
+import java.net.URL;
 import java.util.concurrent.Callable;
 
+import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.SwingWorker;
 import javax.swing.UIManager;
@@ -23,6 +25,7 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
 import test.env.ComponentEnvironment;
+import test.env.ScreenshotSaver;
 import test.fixtures.MonitorFixture;
 import test.fixtures.WorkerFixture;
 
@@ -35,6 +38,7 @@ public class TaskMonitorGUITest
     private ComponentEnvironment<MonitorFixture> env;
     private MonitorFixture                       progressBar;
     private JPopupMenuFixture                    menuFixture;
+    private final ScreenshotSaver                screenshotSaver = new ScreenshotSaver();
 
     @Test( timeOut = 15000 )
     public void cancelAll()
@@ -42,21 +46,21 @@ public class TaskMonitorGUITest
     {
         assert !progressBar.isVisible();
 
-        final WaitingWorker first = createTestWorker();
-        final WaitingWorker second = createTestWorker();
-        final WaitingWorker third = createTestWorker();
+        final WaitingWorker first = newTask( "Task 1" );
+        final WaitingWorker second = newTask( "Task 2" );
+        final WaitingWorker third = newTask( "Task 3" );
 
         invokeAndExpect( first, first.getTaskId() );
-        invokeAndExpect( second, TaskMonitorGUITest.class.getSimpleName() );
-        invokeAndExpect( third, TaskMonitorGUITest.class.getSimpleName() );
+        invokeAndExpect( second, TaskUI.getCancelTaskTooltip() );
+        invokeAndExpect( third, TaskUI.getCancelTaskTooltip() );
 
         assert progressBar.isVisible();
-        pack();
 
         clickMainButton();
         requireMenuItemCount( 3 );
+        takeScreenshot();
         clickAtMenuItem( first );
-        requireMainButtonText( TaskMonitorGUITest.class.getSimpleName() );
+        requireMainButtonText( TaskUI.getCancelTaskTooltip() );
 
         clickMainButton();
         requireMenuItemCount( 2 );
@@ -72,8 +76,9 @@ public class TaskMonitorGUITest
     public void setUp()
         throws Exception
     {
-        //        UIManager.getDefaults().put( TaskUI.CANCEL_TASK_ACTION_ICON, IMG.icon( IMG.REMOVE_ICON_PATH ) );
-        UIManager.getDefaults().put( TaskUI.CANCEL_TASK_ACTION_TOOLTIP, TaskMonitorGUITest.class.getSimpleName() );
+        final URL imageUrl = getClass().getClassLoader().getResource( "stop.png" );
+        assert imageUrl != null;
+        UIManager.getDefaults().put( TaskUI.CANCEL_TASK_ACTION_ICON, new ImageIcon( imageUrl ) );
 
         env = ComponentEnvironment.fromQuery( new Callable<MonitorFixture>()
         {
@@ -84,7 +89,7 @@ public class TaskMonitorGUITest
             }
         }, true );
         env.setUp( this );
-        env.getFrameFixture().component().setMinimumSize( new Dimension( 640, 70 ) );
+        env.getFrameFixture().component().setMinimumSize( new Dimension( 300, 65 ) );
         progressBar = env.getComponent();
 
         menuFixture = new JPopupMenuFixture( env.getWrapperPanelFixture().robot, progressBar.getTaskPopup() );
@@ -105,7 +110,6 @@ public class TaskMonitorGUITest
     private void clickMainButton()
     {
         env.getWrapperPanelFixture().button().click();
-        pack();
     }
 
     private void invokeAndExpect( final SwingWorker worker, final String text )
@@ -114,11 +118,6 @@ public class TaskMonitorGUITest
         progressBar.invoke( worker );
         Thread.sleep( 1000 );
         requireMainButtonText( text );
-    }
-
-    private void pack()
-    {
-        env.getFrameFixture().component().pack();
     }
 
     private void requireMainButtonText( final String text )
@@ -139,9 +138,14 @@ public class TaskMonitorGUITest
         } );
     }
 
-    protected WaitingWorker createTestWorker()
+    private void takeScreenshot()
     {
-        return new WaitingWorker();
+        screenshotSaver.saveDesktopScreenshot( System.getProperty( "user.home" ) + "/taskmon" );
+    }
+
+    protected WaitingWorker newTask( final String taskId )
+    {
+        return new WaitingWorker( taskId );
     }
 
     /**
@@ -172,6 +176,11 @@ public class TaskMonitorGUITest
     private static final class WaitingWorker
         extends WorkerFixture
     {
+        public WaitingWorker( final String taskId )
+        {
+            super( taskId );
+        }
+
         volatile boolean hang = true;
 
         @Override
