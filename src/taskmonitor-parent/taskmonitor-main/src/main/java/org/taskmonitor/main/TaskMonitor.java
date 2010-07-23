@@ -83,6 +83,7 @@ public class TaskMonitor
      * 
      * @param worker a task to display
      */
+    @SuppressWarnings( "unchecked" )
     public void invoke( final SwingWorker worker )
     {
         taskQueue.invoke( worker );

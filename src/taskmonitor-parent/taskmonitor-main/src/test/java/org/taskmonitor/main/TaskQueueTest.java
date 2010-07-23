@@ -23,6 +23,7 @@ import test.fixtures.WorkerFixture;
 /**
  * @author aeremenok 2010
  */
+@SuppressWarnings( "unchecked" )
 public class TaskQueueTest
 {
     private Environment environment;
