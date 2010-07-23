@@ -3,15 +3,19 @@
  */
 package test.fixtures;
 
-import java.util.UUID;
-
 import javax.swing.SwingWorker;
 
 public class WorkerFixture
     extends SwingWorker<Boolean, Boolean>
 {
     private boolean      interrupted;
-    private final String taskId = UUID.randomUUID().toString();
+    private final String taskId;
+
+    public WorkerFixture( final String taskId )
+    {
+        super();
+        this.taskId = taskId;
+    }
 
     public String getTaskId()
     {
