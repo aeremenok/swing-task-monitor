@@ -1,0 +1,79 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<!-- -->
+	<groupId>org.taskmonitor</groupId>
+	<artifactId>taskmonitor-parent</artifactId>
+	<version>1.1</version>
+	<packaging>pom</packaging>
+	<!-- -->
+	<name>Swing Task Monitor</name>
+	<url>http://code.google.com/p/swing-task-monitor/</url>
+	<inceptionYear>2010</inceptionYear>
+	
+	
+	<modules>
+		<module>taskmonitor-main</module>
+	</modules>
+	<!-- -->
+	<build>
+		<pluginManagement>
+			<plugins>
+				<plugin>
+					<artifactId>maven-compiler-plugin</artifactId>
+					<configuration>
+						<maxmem>300m</maxmem>
+						<meminitial>150m</meminitial>
+						<source>1.6</source>
+						<target>1.6</target>
+						<excludes>
+							<exclude>**/.svn</exclude>
+						</excludes>
+					</configuration>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-release-plugin</artifactId>
+					<version>2.0-beta-9</version>
+					<configuration>
+						<providerImplementations>
+							<svn>javasvn</svn>
+						</providerImplementations>
+						<connectionUrl>scm:svn:https://swing-task-monitor.googlecode.com/svn/trunk/src/taskmonitor-parent</connectionUrl>
+						<tagBase>https://swing-task-monitor.googlecode.com/svn/tags</tagBase>
+					</configuration>
+					<dependencies>
+						<dependency>
+							<groupId>com.google.code.maven-scm-provider-svnjava</groupId>
+							<artifactId>maven-scm-provider-svnjava</artifactId>
+							<version>1.9</version>
+						</dependency>
+					</dependencies>
+				</plugin>
+			</plugins>
+		</pluginManagement>
+		<extensions>
+			<extension>
+				<groupId>org.apache.maven.wagon</groupId>
+				<artifactId>wagon-webdav</artifactId>
+				<version>1.0-beta-2</version>
+			</extension>
+		</extensions>
+	</build>
+	<!-- using google code as target maven repository http://www.beeworks.be/hosting-maven-repository-google-code/ -->
+	<distributionManagement>
+		<repository>
+			<id>googlecode.taskmonitor.repo</id>
+			<url>dav:https://swing-task-monitor.googlecode.com/svn/maven-repository/releases/</url>
+		</repository>
+		<snapshotRepository>
+			<id>googlecode.taskmonitor.snapshotrepo</id>
+			<url>dav:https://swing-task-monitor.googlecode.com/svn/maven-repository/snapshots/</url>
+			<uniqueVersion>false</uniqueVersion>
+		</snapshotRepository>
+	</distributionManagement>
+	<scm>
+		<url>http://swing-task-monitor.googlecode.com/svn/tags/taskmonitor-parent-1.1</url>
+		<connection>scm:svn:http://swing-task-monitor.googlecode.com/svn/tags/taskmonitor-parent-1.1</connection>
+		<developerConnection>scm:svn:https://swing-task-monitor.googlecode.com/svn/tags/taskmonitor-parent-1.1</developerConnection>
+	</scm>
+</project>
