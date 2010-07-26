@@ -87,12 +87,16 @@ public class TaskMonitorGUITest
             {
                 return new MonitorFixture();
             }
-        }, true );
+        } );
         env.setUp( this );
         env.getFrameFixture().component().setMinimumSize( new Dimension( 300, 65 ) );
         progressBar = env.getComponent();
 
         menuFixture = new JPopupMenuFixture( env.getWrapperPanelFixture().robot, progressBar.getTaskPopup() );
+
+        // todo add tests using different locations on the screen 
+        //        final Dimension screen = Toolkit.getDefaultToolkit().getScreenSize();
+        //        env.getFrameFixture().component().setLocation( screen.width / 2, screen.height - 70 );
     }
 
     @AfterClass
@@ -120,6 +124,11 @@ public class TaskMonitorGUITest
         requireMainButtonText( text );
     }
 
+    private WaitingWorker newTask( final String taskId )
+    {
+        return new WaitingWorker( taskId );
+    }
+
     private void requireMainButtonText( final String text )
     {
         env.getWrapperPanelFixture().label( BelongsToMainButton.INSTANCE ).requireText( text );
@@ -141,11 +150,6 @@ public class TaskMonitorGUITest
     private void takeScreenshot()
     {
         screenshotSaver.saveDesktopScreenshot( System.getProperty( "user.home" ) + "/taskmon" );
-    }
-
-    protected WaitingWorker newTask( final String taskId )
-    {
-        return new WaitingWorker( taskId );
     }
 
     /**
@@ -176,12 +180,12 @@ public class TaskMonitorGUITest
     private static final class WaitingWorker
         extends WorkerFixture
     {
+        volatile boolean hang = true;
+
         public WaitingWorker( final String taskId )
         {
             super( taskId );
         }
-
-        volatile boolean hang = true;
 
         @Override
         protected Boolean doInBackground()

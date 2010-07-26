@@ -24,7 +24,7 @@ public class TaskUI
     public static final String PROGRESS_BAR_WIDTH         = "ProgressBar.width";
 
     /**
-     * @return value of {@link TaskUI#CANCEL_TASK_ACTION_ICON}
+     * @return value for {@link TaskUI#CANCEL_TASK_ACTION_ICON}
      */
     public static Icon getCancelTaskIcon()
     {
@@ -32,20 +32,20 @@ public class TaskUI
     }
 
     /**
-     * @return value of {@link TaskUI#CANCEL_TASK_ACTION_TOOLTIP} or <u>"Cancel Task"</u> if it is not specified
+     * @return value for {@link TaskUI#CANCEL_TASK_ACTION_TOOLTIP} or <u>"Show tasks"</u> if it is not specified
      */
     public static String getCancelTaskTooltip()
     {
         final String tooltip = UIManager.getString( CANCEL_TASK_ACTION_TOOLTIP );
         if( tooltip == null )
         {
-            return "Cancel Task";
+            return "Show tasks";
         }
         return tooltip;
     }
 
     /**
-     * @return value of {@link TaskUI#PROGRESS_BAR_WIDTH} or <u>75</u> pixels if it is not specified
+     * @return value for {@link TaskUI#PROGRESS_BAR_WIDTH} or <u>75</u> pixels if it is not specified
      */
     public static int getProgressBarWidth()
     {

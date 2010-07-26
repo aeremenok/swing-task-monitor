@@ -5,7 +5,6 @@ package org.taskmonitor.main;
 
 import java.awt.Component;
 import java.awt.Dimension;
-import java.awt.Point;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.util.List;
@@ -32,36 +31,32 @@ public class TaskPopup
     }
 
     /**
-     * Makes the popup apper inside the screen bounds
+     * Makes the popup appear inside the screen vertical bounds. Assumes that the invoker is inside the screen bounds.
      * 
-     * @param jpm
-     * @param source
+     * @param menu
+     * @param invoker
      * @param x
      * @param y
-     * @param yOffset
      */
-    protected static void showPopupMenu( final JPopupMenu jpm, final Component source, int x, int y, final int yOffset )
-    { // fixme still bad behavior, popup better
+    protected static void showPopupMenu( final JPopupMenu menu, final Component invoker, final int x, final int y )
+    {
         final Dimension screen = Toolkit.getDefaultToolkit().getScreenSize();
-        screen.height -= 50;
 
-        final Point origin = source.getLocationOnScreen();
-        origin.translate( x, y );
+        final int invokerHeight = invoker.getHeight();
+        // at first actual menu height == 0
+        final int menuHeight = menu.getPreferredSize().height;
 
-        final int height = jpm.getHeight();
-        final int width = jpm.getWidth();
+        final int invokerTop = invoker.getLocationOnScreen().y;
+        final int menuBottom = invokerTop + invokerHeight + menuHeight;
 
-        if( origin.x + width > screen.width )
-        {
-            x -= width;
+        if( menuBottom < screen.height )
+        { // popup below the invoker
+            menu.show( invoker, x, y + invokerHeight );
         }
-        if( origin.y + height > screen.height )
-        {
-            y -= height;
-            y += yOffset;
+        else
+        { // popup above the invoker
+            menu.show( invoker, x, y - menuHeight );
         }
-
-        jpm.show( source, x, y );
     }
 
     /**
@@ -80,7 +75,7 @@ public class TaskPopup
 
     public void show( final Component invoker )
     {
-        showPopupMenu( this, invoker, 0, 0, 0 );
+        showPopupMenu( this, invoker, 0, 0 );
     }
 
     /**
