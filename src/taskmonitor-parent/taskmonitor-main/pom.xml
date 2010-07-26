@@ -4,13 +4,13 @@
 	<parent>
 		<artifactId>taskmonitor-parent</artifactId>
 		<groupId>org.taskmonitor</groupId>
-		<version>1.0</version>
+		<version>1.1-SNAPSHOT</version>
 		<relativePath>../pom.xml</relativePath>
 	</parent>
 	<!--  -->
 	<groupId>org.taskmonitor</groupId>
 	<artifactId>taskmonitor-main</artifactId>
-	<version>1.0</version>
+	<version>1.1-SNAPSHOT</version>
 	<name>Swing Task Monitor main module</name>
 	<!--  -->
 	<properties>
