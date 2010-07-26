@@ -34,12 +34,6 @@ public class WorkerFixture
     }
 
     @Override
-    public String toString()
-    {
-        return getTaskId();
-    }
-
-    @Override
     protected Boolean doInBackground()
     {
         try

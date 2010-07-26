@@ -3,37 +3,23 @@
  */
 package test.fixtures;
 
-import javax.swing.SwingWorker;
-
 import org.taskmonitor.main.TaskQueue;
 
 /**
  * @author aeremenok 2010
  */
 public class TaskQueueFixture
-    extends TaskQueue
+    extends TaskQueue<WorkerFixture>
 {
     @Override
-    public String getTaskId( final SwingWorker worker )
+    public String getTaskId( final WorkerFixture worker )
     {
-        return ((WorkerFixture) worker).getTaskId();
+        return worker.getTaskId();
     }
 
     @Override
-    public String getTitle( final SwingWorker worker )
+    protected void cancelExecution( final WorkerFixture worker, final boolean mayInterruptIfRunning )
     {
-        return worker.toString();
-    }
-
-    @Override
-    public boolean isInterruptible( final SwingWorker worker )
-    {
-        return true;
-    }
-
-    @Override
-    protected void doIterruption( final SwingWorker worker )
-    {
-        ((WorkerFixture) worker).interrupt();
+        worker.interrupt();
     }
 }

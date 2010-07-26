@@ -39,10 +39,25 @@ public abstract class TaskQueue<W extends SwingWorker>
     }
 
     /**
-     * @param worker a task, that needs to be presented
-     * @return a human-readable title to display
+     * Is called to provide an unique task key when the task is being registered or unregistered.
+     * 
+     * @param worker a task to be identified
+     * @return an identifier, that is unique for each worker
      */
-    public abstract String getTitle( final W worker );
+    public abstract String getTaskId( final W worker );
+
+    /**
+     * Provides a human-readable title, that will be displayed to user. By default, returns
+     * {@link #getTaskId(SwingWorker)}. The difference is that {@link #getTaskId(SwingWorker)} shoud return an unique
+     * value for each {@link SwingWorker}, and {@link #getTitle(SwingWorker)} can return any value.
+     * 
+     * @param worker a task, that needs to be presented
+     * @return a human-readable title to display.
+     */
+    public String getTitle( final W worker )
+    {
+        return getTaskId( worker );
+    }
 
     /**
      * If the task is still running, does the actual interruption and removes it from the queue. Then notifies
@@ -59,7 +74,7 @@ public abstract class TaskQueue<W extends SwingWorker>
 
         if( isInterruptible( worker ) )
         {
-            doIterruption( worker );
+            cancelExecution( worker, false );
         }
 
         log.debug( "task cancelled: " + getTaskId( worker ) );
@@ -95,14 +110,18 @@ public abstract class TaskQueue<W extends SwingWorker>
     }
 
     /**
-     * Is called to define whether to enable the cancelling button for the given task.
+     * Is called to define, whether to enable the cancelling button for the given task. By default, any worker is
+     * considered to be interruptible. You may override this to disble interruption of some tasks.
      * 
      * @param worker will be checked for interruption ability
      * @return <code>true</code> if given worker can be interrupted
      * @see CancelTaskAction
      * @see ProgressBarButton
      */
-    public abstract boolean isInterruptible( final W worker );
+    public boolean isInterruptible( final W worker )
+    {
+        return true;
+    }
 
     /**
      * @param listener will be unregistered
@@ -114,19 +133,16 @@ public abstract class TaskQueue<W extends SwingWorker>
     }
 
     /**
-     * Does the actual interruption. You may call {@link SwingWorker#cancel(boolean)}, make checks or cleanups.
+     * Does the actual interruption. By default, calls {@link SwingWorker#cancel(boolean)}. You may override this to
+     * make checks or cleanups.
      * 
      * @param worker a task to interrupt
+     * @param mayInterruptIfRunning @see {@link SwingWorker#cancel(boolean)}. By default, is <code>false</code>
      */
-    protected abstract void doIterruption( W worker );
-
-    /**
-     * Is called to provide unique task key when the task is being registered or unregistered.
-     * 
-     * @param worker a task to be identified
-     * @return an identifier, that is unique for each worker
-     */
-    protected abstract String getTaskId( final W worker );
+    protected void cancelExecution( final W worker, final boolean mayInterruptIfRunning )
+    {
+        worker.cancel( mayInterruptIfRunning );
+    }
 
     /**
      * @return a fresh copy of currently running tasks
