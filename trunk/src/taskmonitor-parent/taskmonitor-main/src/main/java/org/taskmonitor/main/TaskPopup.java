@@ -30,6 +30,40 @@ public class TaskPopup
         this.taskQueue = taskQueue;
     }
 
+    protected static int fitXinScreen( final Dimension screen, final JPopupMenu menu, final Component invoker,
+        final int x )
+    {
+        final int menuWidth = menu.getPreferredSize().width;
+        final int invokerLeft = invoker.getLocationOnScreen().x;
+        final int menuRight = invokerLeft + menuWidth;
+
+        if( menuRight < screen.width )
+        {
+            return x;
+        }
+
+        return x - (menuRight - screen.width);
+    }
+
+    protected static int fitYinScreen( final Dimension screen, final JPopupMenu menu, final Component invoker,
+        final int y )
+    {
+        final int invokerHeight = invoker.getHeight();
+        // at first actual menu height == 0
+        final int menuHeight = menu.getPreferredSize().height;
+
+        final int invokerTop = invoker.getLocationOnScreen().y;
+        final int menuBottom = invokerTop + invokerHeight + menuHeight;
+
+        if( menuBottom < screen.height )
+        { // popup below the invoker
+            return y + invokerHeight;
+        }
+
+        // popup above the invoker
+        return y - menuHeight;
+    }
+
     /**
      * Makes the popup appear inside the screen vertical bounds. Assumes that the invoker is inside the screen bounds.
      * 
@@ -41,22 +75,9 @@ public class TaskPopup
     protected static void showPopupMenu( final JPopupMenu menu, final Component invoker, final int x, final int y )
     {
         final Dimension screen = Toolkit.getDefaultToolkit().getScreenSize();
-
-        final int invokerHeight = invoker.getHeight();
-        // at first actual menu height == 0
-        final int menuHeight = menu.getPreferredSize().height;
-
-        final int invokerTop = invoker.getLocationOnScreen().y;
-        final int menuBottom = invokerTop + invokerHeight + menuHeight;
-
-        if( menuBottom < screen.height )
-        { // popup below the invoker
-            menu.show( invoker, x, y + invokerHeight );
-        }
-        else
-        { // popup above the invoker
-            menu.show( invoker, x, y - menuHeight );
-        }
+        final int fitXinScreen = fitXinScreen( screen, menu, invoker, x );
+        final int fitYinScreen = fitYinScreen( screen, menu, invoker, y );
+        menu.show( invoker, fitXinScreen, fitYinScreen );
     }
 
     /**
