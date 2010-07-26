@@ -6,9 +6,8 @@ package org.taskmonitor.main;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
 
 import javax.swing.SwingWorker;
 import javax.swing.SwingWorker.StateValue;
@@ -26,7 +25,7 @@ public abstract class TaskQueue<W extends SwingWorker>
 {
     private static final Logger              log                      = Logger.getLogger( TaskQueue.class );
 
-    protected final Map<String, SwingWorker> workersByTitles          = new TreeMap<String, SwingWorker>();
+    protected final List<SwingWorker>        workers                  = new LinkedList<SwingWorker>();
     protected final TaskQueueListenerSupport taskQueueListenerSupport = new TaskQueueListenerSupport();
 
     /**
@@ -39,25 +38,12 @@ public abstract class TaskQueue<W extends SwingWorker>
     }
 
     /**
-     * Is called to provide an unique task key when the task is being registered or unregistered.
-     * 
-     * @param worker a task to be identified
-     * @return an identifier, that is unique for each worker
-     */
-    public abstract String getTaskId( final W worker );
-
-    /**
-     * Provides a human-readable title, that will be displayed to user. By default, returns
-     * {@link #getTaskId(SwingWorker)}. The difference is that {@link #getTaskId(SwingWorker)} shoud return an unique
-     * value for each {@link SwingWorker}, and {@link #getTitle(SwingWorker)} can return any value.
+     * Provides a human-readable title, that will be displayed to user.
      * 
      * @param worker a task, that needs to be presented
      * @return a human-readable title to display.
      */
-    public String getTitle( final W worker )
-    {
-        return getTaskId( worker );
-    }
+    public abstract String getTitle( final W worker );
 
     /**
      * If the task is still running, does the actual interruption and removes it from the queue. Then notifies
@@ -67,7 +53,7 @@ public abstract class TaskQueue<W extends SwingWorker>
      */
     public void interrupt( final W worker )
     {
-        if( !workersByTitles.containsValue( worker ) )
+        if( !workers.contains( worker ) )
         {
             return;
         }
@@ -77,7 +63,7 @@ public abstract class TaskQueue<W extends SwingWorker>
             cancelExecution( worker, false );
         }
 
-        log.debug( "task cancelled: " + getTaskId( worker ) );
+        log.debug( "task cancelled: " + getTitle( worker ) );
         unregisterTask( worker );
     }
 
@@ -88,21 +74,20 @@ public abstract class TaskQueue<W extends SwingWorker>
      */
     public void invoke( final W worker )
     {
-        final String taskId = getTaskId( worker );
-        if( workersByTitles.containsValue( worker ) )
+        if( workers.contains( worker ) )
         {
-            log.debug( "already called task: " + taskId );
+            log.debug( "already called task: " + getTitle( worker ) );
             return;
         }
 
         worker.getPropertyChangeSupport().addPropertyChangeListener( "state", new CompletionListener( worker ) );
 
         final List<SwingWorker> oldQueue = takeQueueSnapshot();
-        synchronized( workersByTitles )
+        synchronized( workers )
         {
-            workersByTitles.put( taskId, worker );
+            workers.add( worker );
 
-            log.debug( "task started: " + taskId );
+            log.debug( "task started: " + getTitle( worker ) );
             worker.execute();
 
             taskQueueListenerSupport.fireEvent( new TaskQueueEvent( this, oldQueue, takeQueueSnapshot() ) );
@@ -149,7 +134,7 @@ public abstract class TaskQueue<W extends SwingWorker>
      */
     protected List<SwingWorker> takeQueueSnapshot()
     {
-        return new ArrayList<SwingWorker>( workersByTitles.values() );
+        return new ArrayList<SwingWorker>( workers );
     }
 
     /**
@@ -159,17 +144,16 @@ public abstract class TaskQueue<W extends SwingWorker>
      */
     protected void unregisterTask( final W worker )
     {
-        if( !workersByTitles.containsValue( worker ) )
+        if( !workers.contains( worker ) )
         {
             return;
         }
 
-        final String taskId = getTaskId( worker );
         final List<SwingWorker> oldQueue = takeQueueSnapshot();
-        synchronized( workersByTitles )
+        synchronized( workers )
         {
-            log.debug( "task completed: " + taskId );
-            workersByTitles.remove( taskId );
+            log.debug( "task completed: " + getTitle( worker ) );
+            workers.remove( worker );
             taskQueueListenerSupport.fireEvent( new TaskQueueEvent( this, oldQueue, takeQueueSnapshot() ) );
         }
     }
@@ -201,7 +185,7 @@ public abstract class TaskQueue<W extends SwingWorker>
                 case STARTED:
                     break;
                 case DONE:
-                    // SwingWorker#doInBackground() is completed, SwingWorker#done() enqueued in EDT
+                    // SwingWorker#doInBackground() is completed, SwingWorker#done() enqueued to EDT
                     unregisterTask( worker );
                     break;
             }

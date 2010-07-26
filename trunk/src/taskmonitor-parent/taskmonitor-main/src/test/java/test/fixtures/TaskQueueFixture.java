@@ -12,14 +12,14 @@ public class TaskQueueFixture
     extends TaskQueue<WorkerFixture>
 {
     @Override
-    public String getTaskId( final WorkerFixture worker )
-    {
-        return worker.getTaskId();
-    }
-
-    @Override
     protected void cancelExecution( final WorkerFixture worker, final boolean mayInterruptIfRunning )
     {
         worker.interrupt();
+    }
+
+    @Override
+    public String getTitle( final WorkerFixture worker )
+    {
+        return worker.getTaskId();
     }
 }
