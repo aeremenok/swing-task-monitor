@@ -61,7 +61,7 @@ public class Example
         extends TaskQueue<MyWorker>
     {
         @Override
-        public String getTaskId( final MyWorker worker )
+        public String getTitle( final MyWorker worker )
         {
             return worker.getTitle();
         }
