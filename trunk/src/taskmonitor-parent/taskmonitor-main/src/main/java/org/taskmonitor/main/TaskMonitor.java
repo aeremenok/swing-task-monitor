@@ -129,7 +129,7 @@ public class TaskMonitor
     {
         protected ShowTaskList()
         {
-            super( TaskUI.getCancelTaskTooltip(), TaskUI.getCancelTaskIcon() );
+            super( TaskUI.getCancelTaskTooltip() );
             putValue( LONG_DESCRIPTION, TaskUI.getCancelTaskTooltip() );
         }
 
