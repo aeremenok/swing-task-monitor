@@ -61,25 +61,7 @@ public class Example
         extends TaskQueue<MyWorker>
     {
         @Override
-        public String getTitle( final MyWorker worker )
-        {
-            return worker.getTitle();
-        }
-
-        @Override
-        public boolean isInterruptible( final MyWorker worker )
-        { // consider any worker interruptible
-            return true;
-        }
-
-        @Override
-        protected void doIterruption( final MyWorker worker )
-        { // simple interruption
-            worker.cancel( true );
-        }
-
-        @Override
-        protected String getTaskId( final MyWorker worker )
+        public String getTaskId( final MyWorker worker )
         {
             return worker.getTitle();
         }
