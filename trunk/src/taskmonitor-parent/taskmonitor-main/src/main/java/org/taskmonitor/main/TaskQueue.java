@@ -12,8 +12,6 @@ import java.util.List;
 import javax.swing.SwingWorker;
 import javax.swing.SwingWorker.StateValue;
 
-import org.apache.log4j.Logger;
-
 /**
  * Manages task execution. Since {@link SwingWorker}'s can be used differently, you need to provide the implementation
  * details.
@@ -23,8 +21,6 @@ import org.apache.log4j.Logger;
  */
 public abstract class TaskQueue<W extends SwingWorker>
 {
-    private static final Logger              log                      = Logger.getLogger( TaskQueue.class );
-
     protected final List<SwingWorker>        workers                  = new LinkedList<SwingWorker>();
     protected final TaskQueueListenerSupport taskQueueListenerSupport = new TaskQueueListenerSupport();
 
@@ -63,7 +59,7 @@ public abstract class TaskQueue<W extends SwingWorker>
             cancelExecution( worker, false );
         }
 
-        log.debug( "task cancelled: " + getTitle( worker ) );
+        Log.debug( "task cancelled: " + getTitle( worker ) );
         unregisterTask( worker );
     }
 
@@ -76,7 +72,7 @@ public abstract class TaskQueue<W extends SwingWorker>
     {
         if( workers.contains( worker ) )
         {
-            log.debug( "already called task: " + getTitle( worker ) );
+            Log.debug( "already called task: " + getTitle( worker ) );
             return;
         }
 
@@ -87,8 +83,8 @@ public abstract class TaskQueue<W extends SwingWorker>
         {
             workers.add( worker );
 
-            log.debug( "task started: " + getTitle( worker ) );
-            worker.execute();
+            Log.debug( "task started: " + getTitle( worker ) );
+            startExecution( worker );
 
             taskQueueListenerSupport.fireEvent( new TaskQueueEvent( this, oldQueue, takeQueueSnapshot() ) );
         }
@@ -130,6 +126,16 @@ public abstract class TaskQueue<W extends SwingWorker>
     }
 
     /**
+     * Starts the background execution of a task. You may override this to make some preparations.
+     * 
+     * @param worker a task to start
+     */
+    protected void startExecution( final W worker )
+    {
+        worker.execute();
+    }
+
+    /**
      * @return a fresh copy of currently running tasks
      */
     protected List<SwingWorker> takeQueueSnapshot()
@@ -152,7 +158,7 @@ public abstract class TaskQueue<W extends SwingWorker>
         final List<SwingWorker> oldQueue = takeQueueSnapshot();
         synchronized( workers )
         {
-            log.debug( "task completed: " + getTitle( worker ) );
+            Log.debug( "task completed: " + getTitle( worker ) );
             workers.remove( worker );
             taskQueueListenerSupport.fireEvent( new TaskQueueEvent( this, oldQueue, takeQueueSnapshot() ) );
         }

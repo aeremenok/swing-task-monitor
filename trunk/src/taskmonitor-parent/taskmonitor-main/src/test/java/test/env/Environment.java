@@ -4,8 +4,12 @@
 package test.env;
 
 import java.lang.Thread.UncaughtExceptionHandler;
+import java.net.URL;
 
 import org.apache.log4j.Logger;
+import org.apache.log4j.PropertyConfigurator;
+import org.taskmonitor.main.Log;
+import org.taskmonitor.main.Log.LogService;
 import org.testng.ITest;
 
 /**
@@ -21,7 +25,18 @@ public class Environment
     public void setUp( final Object test )
         throws Exception
     {
-        // todo init logs
+        final URL url = getClass().getClassLoader().getResource( "log4j.properties" );
+        assert url != null;
+        PropertyConfigurator.configure( url );
+
+        Log.setLogService( new LogService()
+        {
+            @Override
+            public void debug( final String message )
+            {
+                log.debug( message );
+            }
+        } );
         Thread.setDefaultUncaughtExceptionHandler( this );
         log.debug( testName( test ) + "> env set up" );
     }
