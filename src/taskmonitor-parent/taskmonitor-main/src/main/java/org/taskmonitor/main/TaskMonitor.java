@@ -1,5 +1,17 @@
+/*
+ * Copyright (C) 2010 Andrey Yeremenok (eav1986__at__gmail__com)
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and limitations under the License.
+ */
+
 /**
- * 
+ *
  */
 package org.taskmonitor.main;
 
@@ -15,20 +27,20 @@ import javax.swing.SwingWorker;
 /**
  * A main component, that displays progress and controls. <br>
  * <h1>Usage:</h1>
- * 
+ *
  * <pre>
  * TaskMonitor myMonitor = new TaskMonitor( new TaskQueue()
  * {
  *     // ... provide implementation to handle your workers
  * } );
  * myFrame.add( myMonitor );
- * 
+ *
  * myMonitor.invoke( new SwingWorker()
  * {
  *     // ... implement background processing
  * } );
  * </pre>
- * 
+ *
  * @author aeremenok 2010
  */
 public class TaskMonitor
@@ -49,7 +61,7 @@ public class TaskMonitor
 
     /**
      * Create a <code>TaskMonitor</code> using the specified <code>TaskQueue</code>
-     * 
+     *
      * @param taskQueue the <code>TaskQueue</code> to use
      */
     public TaskMonitor( final TaskQueue taskQueue )
@@ -80,7 +92,7 @@ public class TaskMonitor
 
     /**
      * add a task to {@link TaskQueue}, call {@link SwingWorker#execute()} and display progress
-     * 
+     *
      * @param worker a task to display
      */
     @SuppressWarnings( "unchecked" )
@@ -91,7 +103,7 @@ public class TaskMonitor
 
     /**
      * display changes after some tasks were started, completed or interrupted
-     * 
+     *
      * @param event contains info about the queue before and after the change
      */
     protected void processChangedQueue( final TaskQueueEvent event )
@@ -121,7 +133,7 @@ public class TaskMonitor
 
     /**
      * shows the {@link TaskPopup}
-     * 
+     *
      * @author aeremenok 2010
      */
     protected class ShowTaskList
