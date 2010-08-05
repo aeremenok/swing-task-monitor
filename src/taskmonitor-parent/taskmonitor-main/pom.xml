@@ -18,12 +18,13 @@
 	</properties>
 	<!--  -->
 	<dependencies>
+		<!-- test -->
 		<dependency>
 			<groupId>log4j</groupId>
 			<artifactId>log4j</artifactId>
 			<version>1.2.14</version>
+			<scope>test</scope>
 		</dependency>
-		<!-- test -->
 		<dependency>
 			<groupId>org.testng</groupId>
 			<artifactId>testng</artifactId>
