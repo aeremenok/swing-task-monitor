@@ -15,6 +15,9 @@
  */
 package org.taskmonitor.main;
 
+import static java.awt.BorderLayout.CENTER;
+import static org.taskmonitor.main.ProgressBarButton.DisplayMode.SINGLE;
+
 import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.util.List;
@@ -27,20 +30,20 @@ import javax.swing.SwingWorker;
 /**
  * A main component, that displays progress and controls. <br>
  * <h1>Usage:</h1>
- *
+ * 
  * <pre>
  * TaskMonitor myMonitor = new TaskMonitor( new TaskQueue()
  * {
  *     // ... provide implementation to handle your workers
  * } );
  * myFrame.add( myMonitor );
- *
+ * 
  * myMonitor.invoke( new SwingWorker()
  * {
  *     // ... implement background processing
  * } );
  * </pre>
- *
+ * 
  * @author aeremenok 2010
  */
 public class TaskMonitor
@@ -61,7 +64,7 @@ public class TaskMonitor
 
     /**
      * Create a <code>TaskMonitor</code> using the specified <code>TaskQueue</code>
-     *
+     * 
      * @param taskQueue the <code>TaskQueue</code> to use
      */
     public TaskMonitor( final TaskQueue taskQueue )
@@ -85,14 +88,14 @@ public class TaskMonitor
         } );
 
         taskPopup = new TaskPopup( taskQueue );
-        showTaskListButton = new ProgressBarButton( new ShowTaskList() );
+        showTaskListButton = new ProgressBarButton( new ShowTaskList(), SINGLE );
 
         setVisible( false );
     }
 
     /**
      * add a task to {@link TaskQueue}, call {@link SwingWorker#execute()} and display progress
-     *
+     * 
      * @param worker a task to display
      */
     @SuppressWarnings( "unchecked" )
@@ -103,7 +106,7 @@ public class TaskMonitor
 
     /**
      * display changes after some tasks were started, completed or interrupted
-     *
+     * 
      * @param event contains info about the queue before and after the change
      */
     protected void processChangedQueue( final TaskQueueEvent event )
@@ -120,12 +123,12 @@ public class TaskMonitor
         if( changedQueue.size() == 1 )
         {
             final SwingWorker first = changedQueue.get( 0 );
-            add( new ProgressBarButton( new CancelTaskAction( first, taskQueue ) ), BorderLayout.CENTER );
+            add( new ProgressBarButton( new CancelTaskAction( first, taskQueue ), SINGLE ), CENTER );
         }
         else
         {
             taskPopup.setCurrentWorkerQueue( changedQueue );
-            add( showTaskListButton, BorderLayout.CENTER );
+            add( showTaskListButton, CENTER );
         }
         setVisible( true );
         updateUI();
@@ -133,7 +136,7 @@ public class TaskMonitor
 
     /**
      * shows the {@link TaskPopup}
-     *
+     * 
      * @author aeremenok 2010
      */
     protected class ShowTaskList
