@@ -24,6 +24,7 @@ import java.util.concurrent.Callable;
 
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
+import javax.swing.SwingConstants;
 import javax.swing.SwingWorker;
 import javax.swing.UIManager;
 
@@ -91,6 +92,8 @@ public class TaskMonitorGUITest
         final URL imageUrl = getClass().getClassLoader().getResource( "stop.png" );
         assert imageUrl != null;
         UIManager.getDefaults().put( TaskUI.CANCEL_TASK_ACTION_ICON, new ImageIcon( imageUrl ) );
+        UIManager.getDefaults().put( TaskUI.DISPLAY_SINGLE_PROGRESS_BAR, true );
+        UIManager.getDefaults().put( TaskUI.CANCEL_TASK_ACTION_TEXT_POSITION, SwingConstants.LEADING );
 
         env = ComponentEnvironment.fromQuery( new Callable<MonitorFixture>()
         {

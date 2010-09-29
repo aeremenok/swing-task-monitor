@@ -15,6 +15,8 @@
  */
 package org.taskmonitor.main;
 
+import static org.taskmonitor.main.ProgressBarButton.DisplayMode.MULTIPLE;
+
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Toolkit;
@@ -26,7 +28,7 @@ import javax.swing.SwingWorker;
 
 /**
  * Displays a list of {@link ProgressBarButton}s for the current task queue. Each button interrupts a task.
- *
+ * 
  * @author aeremenok 2010
  */
 public class TaskPopup
@@ -78,7 +80,7 @@ public class TaskPopup
 
     /**
      * Makes the popup appear inside the screen vertical bounds. Assumes that the invoker is inside the screen bounds.
-     *
+     * 
      * @param menu
      * @param invoker
      * @param x
@@ -94,7 +96,7 @@ public class TaskPopup
 
     /**
      * Called by {@link TaskMonitor} when the task collection changes
-     *
+     * 
      * @param workers new task collection
      */
     public void setCurrentWorkerQueue( final List<SwingWorker> workers )
@@ -102,7 +104,7 @@ public class TaskPopup
         removeAll();
         for( final SwingWorker worker : workers )
         {
-            add( new ProgressBarButton( new CancelAndHide( worker ) ) );
+            add( new ProgressBarButton( new CancelAndHide( worker ), MULTIPLE ) );
         }
     }
 
@@ -113,7 +115,7 @@ public class TaskPopup
 
     /**
      * Does interruption then hides the popup.
-     *
+     * 
      * @author aeremenok 2010
      */
     protected class CancelAndHide

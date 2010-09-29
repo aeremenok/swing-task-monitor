@@ -23,7 +23,7 @@ import javax.swing.SwingWorker;
 /**
  * Initiates a {@link SwingWorker} interruption by the {@link TaskQueue}. Is enabled if and only if the
  * {@link TaskQueue#isInterruptible(SwingWorker)} returns <code>true</code>.
- *
+ * 
  * @author aeremenok 2010
  */
 @SuppressWarnings( "unchecked" )

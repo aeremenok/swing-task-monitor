@@ -15,6 +15,10 @@
  */
 package org.taskmonitor.main;
 
+import static org.taskmonitor.main.ProgressBarButton.DisplayMode.MULTIPLE;
+import static org.taskmonitor.main.ProgressBarButton.DisplayMode.SINGLE;
+import static org.taskmonitor.main.TaskUI.displaySingleProgressBar;
+
 import java.awt.Dimension;
 
 import javax.swing.Action;
@@ -28,7 +32,7 @@ import javax.swing.SwingConstants;
 /**
  * Displays an iterruption icon, a task title and an indeterminate progressbar<br>
  * todo listen for SwingWorker progress
- *
+ * 
  * @author aeremenok 2010
  * @see JProgressBar
  */
@@ -37,14 +41,22 @@ public class ProgressBarButton
 {
     public ProgressBarButton( final Action a )
     {
+        this( a, DisplayMode.SINGLE );
+    }
+
+    public ProgressBarButton( final Action a, final DisplayMode displayMode )
+    {
         super( a );
 
         setName( getText() );
 
         setLayout( new BoxLayout( this, BoxLayout.X_AXIS ) );
         add( createIconLabel() );
-        add( Box.createHorizontalGlue() );
-        add( createProgressBar() );
+        if( displayMode == SINGLE || displayMode == MULTIPLE && !displaySingleProgressBar() )
+        {
+            add( Box.createHorizontalGlue() );
+            add( createProgressBar() );
+        }
 
         setHideActionText( true );
         setIcon( null );
@@ -52,7 +64,9 @@ public class ProgressBarButton
 
     protected JLabel createIconLabel()
     {
-        return new JLabel( getText(), getIcon(), SwingConstants.CENTER );
+        final JLabel label = new JLabel( getText(), getIcon(), SwingConstants.CENTER );
+        label.setHorizontalTextPosition( TaskUI.getCancelTaskTextPosition() );
+        return label;
     }
 
     protected JProgressBar createProgressBar()
@@ -65,5 +79,11 @@ public class ProgressBarButton
         progressBar.setMaximumSize( new Dimension( 70, progressBar.getMaximumSize().height ) );
 
         return progressBar;
+    }
+
+    public static enum DisplayMode
+    {
+            SINGLE,
+            MULTIPLE;
     }
 }

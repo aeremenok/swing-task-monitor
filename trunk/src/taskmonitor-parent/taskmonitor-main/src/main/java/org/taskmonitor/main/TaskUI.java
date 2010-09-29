@@ -16,6 +16,7 @@
 package org.taskmonitor.main;
 
 import javax.swing.Icon;
+import javax.swing.SwingConstants;
 import javax.swing.UIManager;
 
 /**
@@ -26,14 +27,17 @@ import javax.swing.UIManager;
  * <li> {@link TaskUI#CANCEL_TASK_ACTION_TOOLTIP}</li>
  * <li> {@link TaskUI#PROGRESS_BAR_WIDTH}</li>
  * </ul>
- *
+ * 
  * @author aeremenok 2010
  */
 public class TaskUI
 {
-    public static final String CANCEL_TASK_ACTION_TOOLTIP = "CancelTaskAction.tooltip";
-    public static final String CANCEL_TASK_ACTION_ICON    = "CancelTaskAction.icon";
-    public static final String PROGRESS_BAR_WIDTH         = "ProgressBar.width";
+    public static final String CANCEL_TASK_ACTION_TOOLTIP       = "CancelTaskAction.tooltip";
+    public static final String CANCEL_TASK_ACTION_ICON          = "CancelTaskAction.icon";
+    public static final String CANCEL_TASK_ACTION_TEXT_POSITION = "CancelTaskAction.text.position";
+
+    public static final String PROGRESS_BAR_WIDTH               = "ProgressBar.width";
+    public static final String DISPLAY_SINGLE_PROGRESS_BAR      = "ProgressBar.display.single";
 
     /**
      * @return value for {@link TaskUI#CANCEL_TASK_ACTION_ICON}
@@ -67,5 +71,31 @@ public class TaskUI
             return 75;
         }
         return width;
+    }
+
+    public static boolean displaySingleProgressBar()
+    {
+        return UIManager.getBoolean( DISPLAY_SINGLE_PROGRESS_BAR );
+    }
+
+    public static int getCancelTaskTextPosition()
+    {
+        if( UIManager.get( CANCEL_TASK_ACTION_TEXT_POSITION ) == null )
+        {
+            return SwingConstants.TRAILING;
+        }
+
+        final int position = UIManager.getInt( CANCEL_TASK_ACTION_TEXT_POSITION );
+        switch( position )
+        {
+            case SwingConstants.LEFT:
+            case SwingConstants.RIGHT:
+            case SwingConstants.CENTER:
+            case SwingConstants.LEADING:
+            case SwingConstants.TRAILING:
+                return position;
+            default:
+                return SwingConstants.TRAILING;
+        }
     }
 }
