@@ -19,6 +19,7 @@ import static org.testng.Assert.assertEquals;
 
 import java.awt.Container;
 import java.awt.Dimension;
+import java.awt.Frame;
 import java.net.URL;
 import java.util.concurrent.Callable;
 
@@ -48,10 +49,10 @@ import test.fixtures.WorkerFixture;
 @Test( sequential = true )
 public class TaskMonitorGUITest
 {
-    private ComponentEnvironment<MonitorFixture> env;
-    private MonitorFixture                       progressBar;
-    private JPopupMenuFixture                    menuFixture;
-    private final ScreenshotSaver                screenshotSaver = new ScreenshotSaver();
+    private ComponentEnvironment<MonitorFixture.Holder> env;
+    private MonitorFixture                              progressBar;
+    private JPopupMenuFixture                           menuFixture;
+    private final ScreenshotSaver                       screenshotSaver = new ScreenshotSaver();
 
     @Test( timeOut = 15000 )
     public void cancelAll()
@@ -59,9 +60,9 @@ public class TaskMonitorGUITest
     {
         assert !progressBar.isVisible();
 
-        final WaitingWorker first = newTask( "Task 1" );
-        final WaitingWorker second = newTask( "Task 2" );
-        final WaitingWorker third = newTask( "Task 3" );
+        final WaitingWorker first = newTask( "Task Name" );
+        final WaitingWorker second = newTask( "Very Long Task Name" );
+        final WaitingWorker third = newTask( "Very Very So Much Long Task Name Goes Here Blah-blah-blah Lots of letters" );
 
         invokeAndExpect( first, first.getTaskId() );
         invokeAndExpect( second, TaskUI.getCancelTaskTooltip() );
@@ -78,7 +79,7 @@ public class TaskMonitorGUITest
         clickMainButton();
         requireMenuItemCount( 2 );
         clickAtMenuItem( second );
-        requireMainButtonText( third.getTaskId() );
+        requireMainButtonText( third.getTaskId().substring( 0, 27 ) + "..." );
 
         Thread.sleep( 1000 );
         clickMainButton();
@@ -92,22 +93,28 @@ public class TaskMonitorGUITest
         final URL imageUrl = getClass().getClassLoader().getResource( "stop.png" );
         assert imageUrl != null;
         UIManager.getDefaults().put( TaskUI.CANCEL_TASK_ACTION_ICON, new ImageIcon( imageUrl ) );
-        UIManager.getDefaults().put( TaskUI.DISPLAY_SINGLE_PROGRESS_BAR, true );
+        UIManager.getDefaults().put( TaskUI.DISPLAY_ONLY_ONE_PROGRESS_BAR, true );
         UIManager.getDefaults().put( TaskUI.CANCEL_TASK_ACTION_TEXT_POSITION, SwingConstants.LEADING );
+        UIManager.getDefaults().put( TaskUI.FIXED_BUTTON_MAXCHARS, 30 );
+        UIManager.getDefaults().put( TaskUI.FIXED_BUTTON_WIDTH, 700 );
 
-        env = ComponentEnvironment.fromQuery( new Callable<MonitorFixture>()
+        env = ComponentEnvironment.fromQuery( new Callable<MonitorFixture.Holder>()
         {
             @Override
-            public MonitorFixture call()
+            public MonitorFixture.Holder call()
             {
-                return new MonitorFixture();
+                return new MonitorFixture.Holder();
             }
         } );
         env.setUp( this );
-        env.getFrameFixture().component().setMinimumSize( new Dimension( 300, 65 ) );
-        progressBar = env.getComponent();
+        progressBar = env.getComponent().getMonitorFixture();
 
         menuFixture = new JPopupMenuFixture( env.getWrapperPanelFixture().robot, progressBar.getTaskPopup() );
+
+        final Frame frame = env.getFrameFixture().target;
+        frame.setMinimumSize( new Dimension( 800, 600 ) );
+        frame.pack();
+        frame.setLocationRelativeTo( null );
 
         // todo add tests using different locations on the screen
         //        final Dimension screen = Toolkit.getDefaultToolkit().getScreenSize();
@@ -183,10 +190,21 @@ public class TaskMonitorGUITest
         @Override
         protected boolean isMatching( final JLabel component )
         {
-            final Container parent = component.getParent();
-            if( parent instanceof ProgressBarButton )
+            final String text = component.getText();
+            if( text == null || "".equals( text ) )
             {
-                return parent.getParent() instanceof TaskMonitor;
+                return false;
+            }
+            final Container parent = component.getParent();
+            if( parent == null )
+            {
+                return false;
+            }
+
+            final Container grandParent = parent.getParent();
+            if( grandParent instanceof ProgressBarButton )
+            {
+                return grandParent.getParent() instanceof TaskMonitor;
             }
             return false;
         }
