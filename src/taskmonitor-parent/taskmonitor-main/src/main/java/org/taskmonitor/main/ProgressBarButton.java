@@ -17,7 +17,8 @@ package org.taskmonitor.main;
 
 import static org.taskmonitor.main.ProgressBarButton.DisplayMode.MULTIPLE;
 import static org.taskmonitor.main.ProgressBarButton.DisplayMode.SINGLE;
-import static org.taskmonitor.main.TaskUI.displaySingleProgressBar;
+import static org.taskmonitor.main.TaskUI.displayOnlyOneProgressBar;
+import static org.taskmonitor.main.TaskUI.getProgressBarWidth;
 
 import java.awt.Dimension;
 
@@ -48,11 +49,19 @@ public class ProgressBarButton
     {
         super( a );
 
+        final int fixedButtonsWidth = TaskUI.getFixedButtonsWidth();
+        if( fixedButtonsWidth > 0 )
+        {
+            final Dimension exactSize = new Dimension( fixedButtonsWidth, getPreferredSize().height );
+            setMinimumSize( exactSize );
+            setMaximumSize( exactSize );
+        }
+
         setName( getText() );
 
         setLayout( new BoxLayout( this, BoxLayout.X_AXIS ) );
         add( createIconLabel() );
-        if( displayMode == SINGLE || displayMode == MULTIPLE && !displaySingleProgressBar() )
+        if( displayMode == SINGLE || displayMode == MULTIPLE && !displayOnlyOneProgressBar() )
         {
             add( Box.createHorizontalGlue() );
             add( createProgressBar() );
@@ -62,11 +71,40 @@ public class ProgressBarButton
         setIcon( null );
     }
 
-    protected JLabel createIconLabel()
+    protected String shorten( final String text, final int maxChars )
     {
-        final JLabel label = new JLabel( getText(), getIcon(), SwingConstants.CENTER );
-        label.setHorizontalTextPosition( TaskUI.getCancelTaskTextPosition() );
-        return label;
+        if( text.length() < maxChars )
+        {
+            return text;
+        }
+        return text.substring( 0, maxChars - 3 ) + "...";
+    }
+
+    protected Box createIconLabel()
+    {
+        final Box box = Box.createHorizontalBox();
+        final JLabel textLabel = new JLabel( getText(), SwingConstants.CENTER );
+        final JLabel iconLabel = new JLabel( getIcon(), SwingConstants.CENTER );
+
+        final int maxChars = TaskUI.getFixedButtonsMaxChars();
+        if( maxChars > 0 )
+        {
+            textLabel.setText( shorten( getText(), maxChars ) );
+        }
+
+        if( TaskUI.getCancelTaskTextPosition() == SwingConstants.LEADING )
+        {
+            box.add( textLabel );
+            box.add( Box.createHorizontalGlue() );
+            box.add( iconLabel );
+        }
+        else
+        {
+            box.add( iconLabel );
+            box.add( Box.createHorizontalGlue() );
+            box.add( textLabel );
+        }
+        return box;
     }
 
     protected JProgressBar createProgressBar()
@@ -76,7 +114,9 @@ public class ProgressBarButton
         progressBar.setIndeterminate( true );
 
         // make all progressbars' width equal
-        progressBar.setMaximumSize( new Dimension( 70, progressBar.getMaximumSize().height ) );
+        final int progressBarWidth = getProgressBarWidth() > 0
+            ? getProgressBarWidth() : 70;
+        progressBar.setMaximumSize( new Dimension( progressBarWidth, progressBar.getMaximumSize().height ) );
 
         return progressBar;
     }

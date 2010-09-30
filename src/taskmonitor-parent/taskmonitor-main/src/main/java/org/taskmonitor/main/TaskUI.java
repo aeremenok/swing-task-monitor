@@ -15,6 +15,8 @@
  */
 package org.taskmonitor.main;
 
+import java.awt.Font;
+
 import javax.swing.Icon;
 import javax.swing.SwingConstants;
 import javax.swing.UIManager;
@@ -36,8 +38,12 @@ public class TaskUI
     public static final String CANCEL_TASK_ACTION_ICON          = "CancelTaskAction.icon";
     public static final String CANCEL_TASK_ACTION_TEXT_POSITION = "CancelTaskAction.text.position";
 
+    public static final String BUTTON_FONT                      = "Button.all.font";
+    public static final String FIXED_BUTTON_WIDTH               = "Button.all.width";
+    public static final String FIXED_BUTTON_MAXCHARS            = "Button.all.maxchars";
+
     public static final String PROGRESS_BAR_WIDTH               = "ProgressBar.width";
-    public static final String DISPLAY_SINGLE_PROGRESS_BAR      = "ProgressBar.display.single";
+    public static final String DISPLAY_ONLY_ONE_PROGRESS_BAR    = "ProgressBar.display.single";
 
     /**
      * @return value for {@link TaskUI#CANCEL_TASK_ACTION_ICON}
@@ -73,9 +79,24 @@ public class TaskUI
         return width;
     }
 
-    public static boolean displaySingleProgressBar()
+    public static Font getButtonFont()
     {
-        return UIManager.getBoolean( DISPLAY_SINGLE_PROGRESS_BAR );
+        return UIManager.getFont( BUTTON_FONT );
+    }
+
+    public static int getFixedButtonsWidth()
+    {
+        return UIManager.getInt( FIXED_BUTTON_WIDTH );
+    }
+
+    public static int getFixedButtonsMaxChars()
+    {
+        return UIManager.getInt( FIXED_BUTTON_MAXCHARS );
+    }
+
+    public static boolean displayOnlyOneProgressBar()
+    {
+        return UIManager.getBoolean( DISPLAY_ONLY_ONE_PROGRESS_BAR );
     }
 
     public static int getCancelTaskTextPosition()
@@ -88,9 +109,6 @@ public class TaskUI
         final int position = UIManager.getInt( CANCEL_TASK_ACTION_TEXT_POSITION );
         switch( position )
         {
-            case SwingConstants.LEFT:
-            case SwingConstants.RIGHT:
-            case SwingConstants.CENTER:
             case SwingConstants.LEADING:
             case SwingConstants.TRAILING:
                 return position;

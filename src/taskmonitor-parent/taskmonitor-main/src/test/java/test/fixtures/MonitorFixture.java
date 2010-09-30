@@ -15,6 +15,10 @@
  */
 package test.fixtures;
 
+import java.awt.FlowLayout;
+
+import javax.swing.JPanel;
+
 import org.taskmonitor.main.TaskMonitor;
 import org.taskmonitor.main.TaskPopup;
 
@@ -29,5 +33,27 @@ public class MonitorFixture
     public TaskPopup getTaskPopup()
     {
         return taskPopup;
+    }
+
+    public static class Holder
+        extends JPanel
+    {
+        private final MonitorFixture monitorFixture = new MonitorFixture();
+
+        public Holder()
+        {
+            super( new FlowLayout() );
+            add( monitorFixture );
+        }
+
+        public TaskPopup getTaskPopup()
+        {
+            return this.monitorFixture.getTaskPopup();
+        }
+
+        public MonitorFixture getMonitorFixture()
+        {
+            return this.monitorFixture;
+        }
     }
 }
